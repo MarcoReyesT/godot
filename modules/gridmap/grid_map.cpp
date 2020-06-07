@@ -856,6 +856,7 @@ void GridMap::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("clear"), &GridMap::clear);
 
 	ClassDB::bind_method(D_METHOD("get_used_cells"), &GridMap::get_used_cells);
+	ClassDB::bind_method(D_METHOD("get_used_cells_by_id", "p_id"), &GridMap::get_used_cells_by_id);
 
 	ClassDB::bind_method(D_METHOD("get_meshes"), &GridMap::get_meshes);
 	ClassDB::bind_method(D_METHOD("get_bake_meshes"), &GridMap::get_bake_meshes);
@@ -1115,4 +1116,19 @@ GridMap::~GridMap() {
 		mesh_library->unregister_owner(this);
 
 	clear();
+}
+
+Array GridMap::get_used_cells_by_id(int p_id) const {
+	
+	Array a;
+	a.resize(cell_map.size());
+	int i = 0;
+	for (Map<IndexKey, Cell>::Element *E = cell_map.front(); E; E = E->next()) {
+		if (E->value().item == p_id) {
+			Vector3 p(E->key().x, E->key().y, E->key().z);
+			a[i++] = p;
+		}
+	}
+
+	return a;
 }

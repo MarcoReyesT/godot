@@ -47,6 +47,12 @@ public:
 		X };
 
 	ABCX() {
+		Array arr;
+		int a[2] = {1,1};
+		int b[2] = {1,1};
+		arr.insert(0, a);
+		arr.insert(1, b);
+		set_matriz_pesos(arr);
 		add_point(A, Vector3(0, 0, 0));
 		add_point(B, Vector3(1, 0, 0));
 		add_point(C, Vector3(0, 1, 0));

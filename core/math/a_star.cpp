@@ -336,7 +336,7 @@ Vector3 AStar::get_closest_position_in_segment(const Vector3 &p_point) const {
 	return closest_point;
 }
 
-bool AStar::_solve(Point *begin_point, Point *end_point) {
+bool AStar::_solve(Point *begin_point, Point *end_point, int character_type) {
 
 	pass++;
 
@@ -372,7 +372,8 @@ bool AStar::_solve(Point *begin_point, Point *end_point) {
 				continue;
 			}
 
-			real_t tentative_g_score = p->g_score + _compute_cost(p->id, e->id) * e->weight_scale;
+			//real_t tentative_g_score = p->g_score + _compute_cost(p->id, e->id) * e->weight_scale;
+			real_t tentative_g_score = p->g_score + _compute_cost(p->id, e->id) * (int)((Array)tabla_pesos[e->weight_scale])[character_type];
 
 			bool new_point = false;
 
@@ -431,7 +432,7 @@ real_t AStar::_compute_cost(int p_from_id, int p_to_id) {
 	return from_point->pos.distance_to(to_point->pos);
 }
 
-PoolVector<Vector3> AStar::get_point_path(int p_from_id, int p_to_id) {
+PoolVector<Vector3> AStar::get_point_path(int p_from_id, int p_to_id, int character_type) {
 
 	Point *a;
 	bool from_exists = points.lookup(p_from_id, a);
@@ -450,7 +451,7 @@ PoolVector<Vector3> AStar::get_point_path(int p_from_id, int p_to_id) {
 	Point *begin_point = a;
 	Point *end_point = b;
 
-	bool found_route = _solve(begin_point, end_point);
+	bool found_route = _solve(begin_point, end_point, character_type);
 	if (!found_route) return PoolVector<Vector3>();
 
 	Point *p = end_point;
@@ -479,7 +480,7 @@ PoolVector<Vector3> AStar::get_point_path(int p_from_id, int p_to_id) {
 	return path;
 }
 
-PoolVector<int> AStar::get_id_path(int p_from_id, int p_to_id) {
+PoolVector<int> AStar::get_id_path(int p_from_id, int p_to_id, int character_type) {
 
 	Point *a;
 	bool from_exists = points.lookup(p_from_id, a);
@@ -498,7 +499,7 @@ PoolVector<int> AStar::get_id_path(int p_from_id, int p_to_id) {
 	Point *begin_point = a;
 	Point *end_point = b;
 
-	bool found_route = _solve(begin_point, end_point);
+	bool found_route = _solve(begin_point, end_point, character_type);
 	if (!found_route) return PoolVector<int>();
 
 	Point *p = end_point;
@@ -573,8 +574,9 @@ void AStar::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_closest_point", "to_position", "include_disabled"), &AStar::get_closest_point, DEFVAL(false));
 	ClassDB::bind_method(D_METHOD("get_closest_position_in_segment", "to_position"), &AStar::get_closest_position_in_segment);
 
-	ClassDB::bind_method(D_METHOD("get_point_path", "from_id", "to_id"), &AStar::get_point_path);
-	ClassDB::bind_method(D_METHOD("get_id_path", "from_id", "to_id"), &AStar::get_id_path);
+	ClassDB::bind_method(D_METHOD("get_point_path", "from_id", "to_id", "character_type"), &AStar::get_point_path);
+	ClassDB::bind_method(D_METHOD("get_id_path", "from_id", "to_id", "character_type"), &AStar::get_id_path);
+	ClassDB::bind_method(D_METHOD("set_matriz_pesos", "matriz_pesos"), &AStar::set_matriz_pesos);
 
 	BIND_VMETHOD(MethodInfo(Variant::REAL, "_estimate_cost", PropertyInfo(Variant::INT, "from_id"), PropertyInfo(Variant::INT, "to_id")));
 	BIND_VMETHOD(MethodInfo(Variant::REAL, "_compute_cost", PropertyInfo(Variant::INT, "from_id"), PropertyInfo(Variant::INT, "to_id")));
@@ -587,6 +589,15 @@ AStar::AStar() {
 
 AStar::~AStar() {
 	clear();
+}
+
+void AStar::set_matriz_pesos(Array matriz_pesos) {
+	tabla_pesos = matriz_pesos;
+	int tablaw[2][2];
+	
+	/*Array elemento = (Array) matriz_pesos[1];
+	int numero = (int) elemento[1];
+	return matriz_pesos[1];*/
 }
 
 /////////////////////////////////////////////////////////////

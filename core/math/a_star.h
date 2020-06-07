@@ -119,6 +119,8 @@ class AStar : public Reference {
 
 	OAHashMap<int, Point *> points;
 	Set<Segment> segments;
+	Array tabla_pesos;
+	int tabla[0][0];
 
 	bool _solve(Point *begin_point, Point *end_point);
 
@@ -161,6 +163,7 @@ public:
 
 	AStar();
 	~AStar();
+	void set_matriz_pesos(Array matriz_pesos);
 };
 
 class AStar2D : public Reference {
